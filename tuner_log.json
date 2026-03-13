@@ -34,5 +34,47 @@
     "wr": 0.6,
     "promoted": true,
     "elapsed": 33.94
+  },
+  {
+    "gen": 7,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 35.08
+  },
+  {
+    "gen": 8,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 36.86
+  },
+  {
+    "gen": 9,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 33.01
+  },
+  {
+    "gen": 10,
+    "wr": 0.3,
+    "promoted": false,
+    "elapsed": 38.31
+  },
+  {
+    "gen": 11,
+    "wr": 0.6,
+    "promoted": true,
+    "elapsed": 37.76
+  },
+  {
+    "gen": 12,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 39.69
+  },
+  {
+    "gen": 13,
+    "wr": 0.55,
+    "promoted": true,
+    "elapsed": 50.21
   }
 ]

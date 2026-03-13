@@ -8,6 +8,6 @@ python run_game.py --a_name sample_controller --b_name sample_controller --map_n
 _+++++++++++++++++++_
 <h1>Generational Run - Dont Geek its running in parallel</h1>
 
-python tuner.py --bot_name sample_controller --map_name test_map --generations 500 --games_per_eval 6 --mutation_scale 0.3 --win_threshold 0.51
+python tuner.py --bot_name sample_controller --map_name big_spiral,disjoint,matrix,maze,spiral,test_map,the_complex,the_temple --generations 50 --games_per_eval 10 --mutation_scale 0.3 --win_threshold 0.61
 
 ___________________________________________________
