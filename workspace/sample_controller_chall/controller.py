@@ -1,63 +1,27 @@
-"""
-tuner.py — Evolutionary self-play weight tuner for controller.py
-Usage:
-    python tuner.py --bot_name my_bot --map_name test_map
-    python tuner.py --generations 50 --games_per_eval 6 --mutation_scale 0.15
-"""
-
-import argparse, copy, json, os, random, shutil, subprocess, sys, time
-
-DEFAULT_WEIGHTS = {
-    "score_hill_unpainted":     100.0,
-    "score_hill_theirs":         80.0,
-    "score_hill_not_ours":       60.0,
-    "score_hill_ours":           20.0,
-    "score_unpainted":           30.0,
-    "score_theirs":              10.0,
-    "score_ours":                 5.0,
-    "score_powerup_bonus":       50.0,
-    "score_last_loc_penalty":   -20.0,
-    "paint_pri_hill_unpainted":  10.0,
-    "paint_pri_hill_painted":     8.0,
-    "paint_pri_unpainted":        6.0,
-    "backtrack_penalty":         40.0,
-    "powerup_threshold":         70.0,
-    "dominance_ratio":            0.60,
-    "bid_amount":                40.0,
-    "roam_distance_penalty":      0.5,
-}
-
-MUTATION_SCALES = {k: 0.20 for k in DEFAULT_WEIGHTS}
-MUTATION_SCALES.update({"backtrack_penalty": 0.25, "powerup_threshold": 0.15,
-                         "dominance_ratio": 0.10, "score_unpainted": 0.25,
-                         "score_theirs": 0.25, "score_ours": 0.25})
-
-BOUNDS = {
-    "dominance_ratio":       (0.40, 0.90),
-    "powerup_threshold":     (20.0, 95.0),
-    "bid_amount":            (0.0,  100.0),
-    "roam_distance_penalty": (0.0,  5.0),
-}
-
-
-def mutate(weights, scale=1.0):
-    new_w = copy.deepcopy(weights)
-    chosen = random.sample(list(new_w), max(1, len(new_w) // 3))
-    for k in chosen:
-        new_w[k] += new_w[k] * MUTATION_SCALES.get(k, 0.20) * scale * random.gauss(0, 1)
-        if k in BOUNDS:
-            lo, hi = BOUNDS[k]
-            new_w[k] = max(lo, min(hi, new_w[k]))
-    return new_w
-
-
-TEMPLATE = '''\
 from collections.abc import Callable
 from collections import deque
 from game import *
 from .player_board import PlayerBoard
 
-_W = {weights_repr}
+_W = {
+    'score_hill_unpainted': 106.856182284648,
+    'score_hill_theirs': 30.589451669516908,
+    'score_hill_not_ours': 49.40486613063326,
+    'score_hill_ours': 15.632442312423674,
+    'score_unpainted': 25.533711723000057,
+    'score_theirs': 6.553993887139993,
+    'score_ours': 4.130527347206956,
+    'score_powerup_bonus': 48.19266720911712,
+    'score_last_loc_penalty': -53.64732054540706,
+    'paint_pri_hill_unpainted': 16.37717479729346,
+    'paint_pri_hill_painted': 4.450759871000479,
+    'paint_pri_unpainted': 10.377515900321194,
+    'backtrack_penalty': 39.20893284462148,
+    'powerup_threshold': 69.54658562455862,
+    'dominance_ratio': 0.7966334883363851,
+    'bid_amount': 11.463269113976816,
+    'roam_distance_penalty': 0.9731330920265947,
+}
 POWERUP_THRESHOLD = _W["powerup_threshold"]
 DOMINANCE_RATIO   = _W["dominance_ratio"]
 BID_AMOUNT        = int(_W["bid_amount"])
@@ -121,7 +85,7 @@ class PlayerController:
         nl = self._dest(loc, m)
         return self._we_own(pb, nl) or nl not in opp_reachable
     def _opp_reachable(self, pb):
-        opp = pb.get_opponent(); best = {{opp.loc: opp.stamina}}
+        opp = pb.get_opponent(); best = {opp.loc: opp.stamina}
         q = deque([(opp.loc, opp.stamina, 0)]); reachable = set()
         while q:
             cur, st, mu = q.popleft()
@@ -143,11 +107,11 @@ class PlayerController:
             cell = pb.board.cells[nl.r][nl.c]
             if self._we_own(pb,nl) or cell.paint_value==0: return m
         if total > 0 and their_cnt/total >= DOMINANCE_RATIO:
-            tgts = {{l for h in hills.values() if h["they_control"] for l in h["cells"] if self._they_own(pb,l)}}
+            tgts = {l for h in hills.values() if h["they_control"] for l in h["cells"] if self._they_own(pb,l)}
             if tgts:
                 m = self._bfs(pb, loc, moves, lambda n: n in tgts)
                 if m: return m
-        uph = {{l for h in hills.values() for l in h["cells"] if not self._we_own(pb,l)}}
+        uph = {l for h in hills.values() for l in h["cells"] if not self._we_own(pb,l)}
         if uph:
             m = self._bfs(pb, loc, moves, lambda n: n in uph)
             if m: return m
@@ -158,13 +122,13 @@ class PlayerController:
         if m: return m
         return self._roam(pb, loc, moves)
     def _hills(self, pb):
-        hills = {{}}; rows,cols = pb.board.board_size.r, pb.board.board_size.c
+        hills = {}; rows,cols = pb.board.board_size.r, pb.board.board_size.c
         thresh = GameConstants.HILL_CONTROL_THRESHOLD
         for r in range(rows):
             for c in range(cols):
                 cell = pb.board.cells[r][c]; hid = cell.hill_id
                 if not hid: continue
-                if hid not in hills: hills[hid]={{"cells":[],"ours":0,"theirs":0}}
+                if hid not in hills: hills[hid]={"cells":[],"ours":0,"theirs":0}
                 l = Location(r,c); hills[hid]["cells"].append(l)
                 if self._we_own(pb,l): hills[hid]["ours"]+=1
                 elif self._they_own(pb,l): hills[hid]["theirs"]+=1
@@ -174,11 +138,11 @@ class PlayerController:
             h["they_control"]=h["theirs"]>h["ours"]   and h["theirs"]/t>=thresh
         return hills
     def _bfs(self, pb, start, moves, pred):
-        mm = {{}}
+        mm = {}
         for m in moves:
             nl=self._dest(start,m)
             if not pb.board.oob(nl) and not pb.board.cells[nl.r][nl.c].is_wall: mm.setdefault(nl,m)
-        visited={{start}}; q=deque()
+        visited={start}; q=deque()
         for nl,m in mm.items():
             if pred(nl): return m
             visited.add(nl); q.append((nl,m))
@@ -191,12 +155,12 @@ class PlayerController:
                 q.append((n,fm))
         return None
     def _roam(self, pb, loc, moves):
-        mm={{}}
+        mm={}
         for m in moves:
             nl=self._dest(loc,m)
             if not pb.board.oob(nl) and not pb.board.cells[nl.r][nl.c].is_wall: mm.setdefault(nl,m)
         if not mm: return None
-        visited={{loc}}; q=deque(); cd={{}}
+        visited={loc}; q=deque(); cd={}
         for nl,m in mm.items(): visited.add(nl); cd[nl]=(m,1); q.append((nl,m,1))
         while q:
             cur,fm,d=q.popleft()
@@ -246,143 +210,4 @@ class PlayerController:
         pb=PlayerBoard(board,player_parity); hills=self._hills(pb)
         o=sum(1 for h in hills.values() if h["we_control"])
         t=sum(1 for h in hills.values() if h["they_control"])
-        return f"T{{self.turn}} hills={{o}}v{{t}}/{{len(hills)}} stamina={{pb.get_player().stamina}}"
-'''
-
-
-def render_controller(weights):
-    w = "{\n" + "".join(f'    {k!r}: {v!r},\n' for k,v in weights.items()) + "}"
-    return TEMPLATE.format(weights_repr=w)
-
-def write_bot(bot_dir, weights, source_dir):
-    os.makedirs(bot_dir, exist_ok=True)
-    for fname in ["player_board.py", "__init__.py"]:
-        src = os.path.join(source_dir, fname)
-        if os.path.exists(src):
-            shutil.copy2(src, os.path.join(bot_dir, fname))
-    with open(os.path.join(bot_dir, "controller.py"), "w") as f:
-        f.write(render_controller(weights))
-
-def run_one_game(run_game_py, game_dir, a, b, map_name, out):
-    cmd = [sys.executable, run_game_py,
-           "--a_name", a, "--b_name", b,
-           "--map_name", map_name, "--game_directory", game_dir,
-           "--output_file", out, "--no_display", "--no_clear_screen"]
-    try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-        combined = r.stdout + r.stderr   # <-- check both streams
-        if "Player A won" in combined: return 1
-        if "Player B won" in combined: return -1
-        return 0
-    except Exception as e:
-        print(f"[game error] {e}")
-        return 0
-
-from concurrent.futures import ProcessPoolExecutor
-def evaluate(run_game_py, game_dir, champ, chall, map_pool, n_games, match_dir):
-    args = []
-    for i in range(n_games):
-        out = os.path.join(match_dir, f"g{i}.json")
-        if i % 2 == 0:
-            args.append((run_game_py, game_dir, chall, champ, map_pool, out, i))
-        else:
-            args.append((run_game_py, game_dir, champ, chall, map_pool, out, i))
-
-    with ProcessPoolExecutor(max_workers=24) as ex:
-        results = list(ex.map(_run_game_worker, args))
-
-    score = 0.0
-    for i, r in enumerate(results):
-        if i % 2 == 0:
-            score += 1.0 if r == 1 else (0.5 if r == 0 else 0)
-        else:
-            score += 1.0 if r == -1 else (0.5 if r == 0 else 0)
-    return score / n_games
-
-def _run_game_worker(args):
-    run_game_py, game_dir, a, b, map_pool, out, idx = args
-    map_name = random.choice(map_pool)
-    return run_one_game(run_game_py, game_dir, a, b, map_name, out)
-def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("--bot_name",       "-n", default="sample_controller")
-    p.add_argument("--game_directory", "-g", default="workspace")
-    p.add_argument("--map_name",       "-m", default="test_map")
-    p.add_argument("--generations",    "-G", type=int,   default=30)
-    p.add_argument("--games_per_eval", "-e", type=int,   default=4)
-    p.add_argument("--mutation_scale", "-s", type=float, default=1.0)
-    p.add_argument("--win_threshold",  "-t", type=float, default=0.55)
-    p.add_argument("--weights_file",   "-w", default="tuner_weights.json")
-    p.add_argument("--run_game_py",    "-r", default="run_game.py")
-    args = p.parse_args()
-
-    root       = os.path.dirname(os.path.abspath(args.run_game_py))
-    game_dir   = os.path.join(root, args.game_directory)
-    source_bot = os.path.join(game_dir, args.bot_name)
-    wfile      = os.path.join(root, args.weights_file)
-    log_file   = os.path.join(root, "tuner_log.json")
-    match_dir  = os.path.join(root, "tuner_matches")
-    os.makedirs(match_dir, exist_ok=True)
-
-    champ_name = args.bot_name + "_champ"
-    chall_name = args.bot_name + "_chall"
-    champ_dir  = os.path.join(game_dir, champ_name)
-    chall_dir  = os.path.join(game_dir, chall_name)
-
-    if os.path.exists(wfile):
-        with open(wfile) as f: champ_w = json.load(f)
-        for k, v in DEFAULT_WEIGHTS.items(): champ_w.setdefault(k, v)
-        print(f"[tuner] Loaded weights from {wfile}")
-    else:
-        champ_w = copy.deepcopy(DEFAULT_WEIGHTS)
-        print("[tuner] Starting from defaults")
-
-    log = []; promotions = 0
-    print(f"\n[tuner] {args.generations} gens | {args.games_per_eval} games/eval | "
-          f"threshold {args.win_threshold:.0%} | scale {args.mutation_scale}\n")
-
-    for gen in range(1, args.generations + 1):
-        t0      = time.time()
-        chall_w = mutate(champ_w, args.mutation_scale)
-        write_bot(champ_dir, champ_w, source_bot)
-        write_bot(chall_dir, chall_w, source_bot)
-        map_pool = args.map_name.split(",")
-        chosen_map = random.choice(map_pool)
-        wr = evaluate(args.run_game_py, game_dir, champ_name, chall_name,
-                    map_pool, args.games_per_eval, match_dir)
-        elapsed  = time.time() - t0
-        promoted = wr >= args.win_threshold
-        tag = "✓ PROMOTED" if promoted else "  rejected"
-        print(f"  Gen {gen:3d}/{args.generations}  map={chosen_map:<12s}  wr={wr:.2f}  {tag}  ({elapsed:.1f}s)")
-        if promoted:
-            promotions += 1; champ_w = chall_w
-            with open(wfile, "w") as f: json.dump(champ_w, f, indent=2)
-            print(f"            → saved to {wfile}")
-        log.append({"gen": gen, "wr": wr, "promoted": promoted, "elapsed": round(elapsed,2)})
-        with open(log_file, "w") as f: json.dump(log, f, indent=2)
-
-    with open(wfile, "w") as f: json.dump(champ_w, f, indent=2)
-    print(f"\n[tuner] Done. {promotions}/{args.generations} promotions.")
-    print(f"        Weights → {wfile}  |  Log → {log_file}")
-    print("\nFinal weights vs defaults:")
-    for k, v in champ_w.items():
-        d = v - DEFAULT_WEIGHTS.get(k, v)
-        arrow = f"  ({'+' if d>=0 else ''}{d:.2f})" if abs(d) > 0.01 else ""
-        print(f"  {k:<30s} {v:8.2f}{arrow}")
-
-    try:
-        ans = input("\nApply back to source bot? [y/N] ").strip().lower()
-    except EOFError:
-        ans = "n"
-    if ans == "y":
-        bak = source_bot + "_backup"
-        shutil.copytree(source_bot, bak, dirs_exist_ok=True)
-        with open(os.path.join(source_bot, "controller.py"), "w") as f:
-            f.write(render_controller(champ_w))
-        print(f"  Saved! (original backed up to {bak}/)")
-
-    for d in [champ_dir, chall_dir]:
-        if os.path.exists(d): shutil.rmtree(d, ignore_errors=True)
-
-if __name__ == "__main__":
-    main()
+        return f"T{self.turn} hills={o}v{t}/{len(hills)} stamina={pb.get_player().stamina}"
