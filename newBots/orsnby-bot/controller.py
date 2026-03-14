@@ -5,23 +5,23 @@ from .player_board import PlayerBoard
 
 # Tuned weights from evolutionary self-play
 _W = {
-  "score_hill_unpainted": 111.22101979219957,
-  "score_hill_theirs": 30.57010408390029,
-  "score_hill_not_ours": 43.49500046919901,
-  "score_hill_ours": 16.081509610278804,
-  "score_unpainted": 25.304111541385844,
-  "score_theirs": 6.5414734405451975,
-  "score_ours": 3.452518349284261,
-  "score_powerup_bonus": 36.842385113159104,
-  "score_last_loc_penalty": -51.99831823238514,
-  "paint_pri_hill_unpainted": 14.286005831697059,
-  "paint_pri_hill_painted": 5.016932823413244,
-  "paint_pri_unpainted": 8.477628468367397,
-  "backtrack_penalty": 30.65617481674133,
-  "powerup_threshold": 79.61311396159796,
-  "dominance_ratio": 0.7983354343811656,
-  "bid_amount": 9.159760465061439,
-  "roam_distance_penalty": 0.8468622802612401
+  "score_hill_unpainted": 102.78,
+  "score_hill_theirs": 35.70,
+  "score_hill_not_ours": 51.82,
+  "score_hill_ours": 14.76,
+  "score_unpainted": 27.67,
+  "score_theirs": 4.87,
+  "score_ours": 3.20,
+  "score_powerup_bonus": 44.81,
+  "score_last_loc_penalty": -52.74,
+  "paint_pri_hill_unpainted": 16.26,
+  "paint_pri_hill_painted": 3.21,
+  "paint_pri_unpainted": 9.47,
+  "backtrack_penalty": 41.27,
+  "powerup_threshold": 66.83,
+  "dominance_ratio": 0.79,
+  "bid_amount": 10.52,
+  "roam_distance_penalty": 0.77
 }
 
 POWERUP_THRESHOLD   = _W["powerup_threshold"]
