@@ -1,80 +1,296 @@
 [
   {
     "gen": 1,
-    "wr": 0.3,
+    "wr": 0.4,
     "promoted": false,
-    "elapsed": 34.18
+    "elapsed": 43.36
   },
   {
     "gen": 2,
-    "wr": 0.3,
+    "wr": 0.4,
     "promoted": false,
-    "elapsed": 38.17
+    "elapsed": 43.14
   },
   {
     "gen": 3,
-    "wr": 0.5,
+    "wr": 0.45,
     "promoted": false,
-    "elapsed": 36.0
+    "elapsed": 35.64
   },
   {
     "gen": 4,
     "wr": 0.6,
-    "promoted": true,
-    "elapsed": 36.74
+    "promoted": false,
+    "elapsed": 45.15
   },
   {
     "gen": 5,
-    "wr": 0.35,
+    "wr": 0.3,
     "promoted": false,
-    "elapsed": 35.72
+    "elapsed": 35.65
   },
   {
     "gen": 6,
     "wr": 0.6,
-    "promoted": true,
-    "elapsed": 33.94
+    "promoted": false,
+    "elapsed": 40.12
   },
   {
     "gen": 7,
-    "wr": 0.5,
+    "wr": 0.2,
     "promoted": false,
-    "elapsed": 35.08
+    "elapsed": 37.13
   },
   {
     "gen": 8,
-    "wr": 0.5,
-    "promoted": false,
-    "elapsed": 36.86
+    "wr": 0.8,
+    "promoted": true,
+    "elapsed": 38.87
   },
   {
     "gen": 9,
-    "wr": 0.5,
+    "wr": 0.6,
     "promoted": false,
-    "elapsed": 33.01
+    "elapsed": 40.84
   },
   {
     "gen": 10,
-    "wr": 0.3,
+    "wr": 0.5,
     "promoted": false,
-    "elapsed": 38.31
+    "elapsed": 39.47
   },
   {
     "gen": 11,
     "wr": 0.6,
-    "promoted": true,
-    "elapsed": 37.76
+    "promoted": false,
+    "elapsed": 44.84
   },
   {
     "gen": 12,
     "wr": 0.5,
     "promoted": false,
-    "elapsed": 39.69
+    "elapsed": 38.98
   },
   {
     "gen": 13,
-    "wr": 0.55,
+    "wr": 0.4,
+    "promoted": false,
+    "elapsed": 43.48
+  },
+  {
+    "gen": 14,
+    "wr": 0.2,
+    "promoted": false,
+    "elapsed": 39.71
+  },
+  {
+    "gen": 15,
+    "wr": 0.2,
+    "promoted": false,
+    "elapsed": 43.6
+  },
+  {
+    "gen": 16,
+    "wr": 0.6,
+    "promoted": false,
+    "elapsed": 39.26
+  },
+  {
+    "gen": 17,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 43.64
+  },
+  {
+    "gen": 18,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 34.91
+  },
+  {
+    "gen": 19,
+    "wr": 0.7,
     "promoted": true,
-    "elapsed": 50.21
+    "elapsed": 36.35
+  },
+  {
+    "gen": 20,
+    "wr": 0.4,
+    "promoted": false,
+    "elapsed": 39.35
+  },
+  {
+    "gen": 21,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 40.36
+  },
+  {
+    "gen": 22,
+    "wr": 0.3,
+    "promoted": false,
+    "elapsed": 38.68
+  },
+  {
+    "gen": 23,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 39.03
+  },
+  {
+    "gen": 24,
+    "wr": 0.6,
+    "promoted": false,
+    "elapsed": 37.72
+  },
+  {
+    "gen": 25,
+    "wr": 0.2,
+    "promoted": false,
+    "elapsed": 36.67
+  },
+  {
+    "gen": 26,
+    "wr": 0.6,
+    "promoted": false,
+    "elapsed": 37.58
+  },
+  {
+    "gen": 27,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 39.06
+  },
+  {
+    "gen": 28,
+    "wr": 0.4,
+    "promoted": false,
+    "elapsed": 37.94
+  },
+  {
+    "gen": 29,
+    "wr": 0.4,
+    "promoted": false,
+    "elapsed": 39.36
+  },
+  {
+    "gen": 30,
+    "wr": 0.6,
+    "promoted": false,
+    "elapsed": 40.71
+  },
+  {
+    "gen": 31,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 33.22
+  },
+  {
+    "gen": 32,
+    "wr": 0.35,
+    "promoted": false,
+    "elapsed": 35.78
+  },
+  {
+    "gen": 33,
+    "wr": 0.3,
+    "promoted": false,
+    "elapsed": 32.46
+  },
+  {
+    "gen": 34,
+    "wr": 0.4,
+    "promoted": false,
+    "elapsed": 38.66
+  },
+  {
+    "gen": 35,
+    "wr": 0.6,
+    "promoted": false,
+    "elapsed": 37.24
+  },
+  {
+    "gen": 36,
+    "wr": 0.6,
+    "promoted": false,
+    "elapsed": 37.77
+  },
+  {
+    "gen": 37,
+    "wr": 0.3,
+    "promoted": false,
+    "elapsed": 40.75
+  },
+  {
+    "gen": 38,
+    "wr": 0.2,
+    "promoted": false,
+    "elapsed": 38.78
+  },
+  {
+    "gen": 39,
+    "wr": 0.45,
+    "promoted": false,
+    "elapsed": 39.62
+  },
+  {
+    "gen": 40,
+    "wr": 0.8,
+    "promoted": true,
+    "elapsed": 38.14
+  },
+  {
+    "gen": 41,
+    "wr": 0.6,
+    "promoted": false,
+    "elapsed": 38.72
+  },
+  {
+    "gen": 42,
+    "wr": 0.6,
+    "promoted": false,
+    "elapsed": 40.09
+  },
+  {
+    "gen": 43,
+    "wr": 0.8,
+    "promoted": true,
+    "elapsed": 40.12
+  },
+  {
+    "gen": 44,
+    "wr": 0.45,
+    "promoted": false,
+    "elapsed": 37.89
+  },
+  {
+    "gen": 45,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 433.8
+  },
+  {
+    "gen": 46,
+    "wr": 0.3,
+    "promoted": false,
+    "elapsed": 39.03
+  },
+  {
+    "gen": 47,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 41.52
+  },
+  {
+    "gen": 48,
+    "wr": 0.5,
+    "promoted": false,
+    "elapsed": 42.62
+  },
+  {
+    "gen": 49,
+    "wr": 0.7,
+    "promoted": true,
+    "elapsed": 41.27
   }
 ]
