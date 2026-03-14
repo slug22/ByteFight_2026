@@ -4,23 +4,23 @@ from game import *
 from .player_board import PlayerBoard
 
 _W = {
-    'score_hill_unpainted': 111.22101979219957,
-    'score_hill_theirs': 30.57010408390029,
-    'score_hill_not_ours': 42.27767072610716,
-    'score_hill_ours': 16.081509610278804,
+    'score_hill_unpainted': 90.41299049643628,
+    'score_hill_theirs': 25.290433963839934,
+    'score_hill_not_ours': 40.49712773405822,
+    'score_hill_ours': 15.203833215534344,
     'score_unpainted': 25.304111541385844,
-    'score_theirs': 6.5414734405451975,
-    'score_ours': 3.452518349284261,
-    'score_powerup_bonus': 36.842385113159104,
-    'score_last_loc_penalty': -51.99831823238514,
-    'paint_pri_hill_unpainted': 14.286005831697059,
-    'paint_pri_hill_painted': 5.016932823413244,
-    'paint_pri_unpainted': 7.498311080253587,
-    'backtrack_penalty': 28.133929949508612,
+    'score_theirs': 6.46183672027214,
+    'score_ours': 3.2583527378608266,
+    'score_powerup_bonus': 36.762591295164114,
+    'score_last_loc_penalty': -53.96012793192176,
+    'paint_pri_hill_unpainted': 15.030429674606125,
+    'paint_pri_hill_painted': 5.853973941510703,
+    'paint_pri_unpainted': 6.772657251823433,
+    'backtrack_penalty': 29.01058034182477,
     'powerup_threshold': 79.61311396159796,
-    'dominance_ratio': 0.8129998492641879,
-    'bid_amount': 9.159760465061439,
-    'roam_distance_penalty': 0.8600146348795171,
+    'dominance_ratio': 0.7999191343892889,
+    'bid_amount': 10.246067650537704,
+    'roam_distance_penalty': 0.8574290432251704,
 }
 POWERUP_THRESHOLD = _W["powerup_threshold"]
 DOMINANCE_RATIO   = _W["dominance_ratio"]

@@ -3,12 +3,32 @@ from collections import deque
 from game import *
 from .player_board import PlayerBoard
 
+# Tuned weights from evolutionary self-play
+_W = {
+  "score_hill_unpainted": 111.22101979219957,
+  "score_hill_theirs": 30.57010408390029,
+  "score_hill_not_ours": 43.49500046919901,
+  "score_hill_ours": 16.081509610278804,
+  "score_unpainted": 25.304111541385844,
+  "score_theirs": 6.5414734405451975,
+  "score_ours": 3.452518349284261,
+  "score_powerup_bonus": 36.842385113159104,
+  "score_last_loc_penalty": -51.99831823238514,
+  "paint_pri_hill_unpainted": 14.286005831697059,
+  "paint_pri_hill_painted": 5.016932823413244,
+  "paint_pri_unpainted": 8.477628468367397,
+  "backtrack_penalty": 30.65617481674133,
+  "powerup_threshold": 79.61311396159796,
+  "dominance_ratio": 0.7983354343811656,
+  "bid_amount": 9.159760465061439,
+  "roam_distance_penalty": 0.8468622802612401
+}
 
-POWERUP_THRESHOLD   = 70
-DOMINANCE_RATIO     = 0.60
-BID_AMOUNT          = 40
+POWERUP_THRESHOLD   = _W["powerup_threshold"]
+DOMINANCE_RATIO     = _W["dominance_ratio"]
+BID_AMOUNT          = int(_W["bid_amount"])
 MEMORY              = 6
-BACKTRACK_PENALTY   = 40.0
+BACKTRACK_PENALTY   = _W["backtrack_penalty"]
 
 
 class PlayerController:
@@ -33,9 +53,7 @@ class PlayerController:
 
         opp_reachable = self._opp_reachable(pb)
 
-        # Partition moves into safe and unsafe ONCE, clearly
         safe_moves = [m for m in all_moves if self._is_safe(pb, loc, m, opp_reachable)]
-        # Prefer non-backtrack, but never leave empty
         safe_nb = [m for m in safe_moves if self._dest(loc, m) != self.last_loc]
         working_moves = safe_nb if safe_nb else (safe_moves if safe_moves else all_moves)
 
@@ -84,7 +102,6 @@ class PlayerController:
         return Location(loc.r + dr, loc.c + dc)
 
     def _we_own(self, pb: PlayerBoard, loc: Location) -> bool:
-        """Cell has our paint on it. paint_value==0 means nobody owns it."""
         cell = pb.board.cells[loc.r][loc.c]
         return cell.paint_value != 0 and Parity.owned(cell.paint_value, pb.player_parity)
 
@@ -93,19 +110,12 @@ class PlayerController:
         return cell.paint_value != 0 and Parity.owned(cell.paint_value, pb.opponent_parity)
 
     def _is_safe(self, pb: PlayerBoard, loc: Location, m, opp_reachable: set) -> bool:
-        """
-        A move is safe if we cannot lose a collision on the destination.
-        We WIN collisions on cells WE own.
-        We LOSE collisions on empty cells OR opponent cells if opp can reach them.
-        """
         nl = self._dest(loc, m)
         if self._we_own(pb, nl):
-            return True   # our paint = we always win collision
-        # Empty or opponent cell: safe only if opponent cannot reach it
+            return True
         return nl not in opp_reachable
 
     def _opp_reachable(self, pb: PlayerBoard) -> set:
-        """All cells opponent can reach this turn given their stamina."""
         opp = pb.get_opponent()
         opp_loc = opp.loc
         opp_stamina = opp.stamina
@@ -118,7 +128,6 @@ class PlayerController:
             cur, stamina_here, moves_used = queue.popleft()
             if best.get(cur, -1) > stamina_here:
                 continue
-            # Cost to step away from cur: move 1 is free (moves_used=0), move 2 costs 10, etc.
             next_cost = GameConstants.EXTRA_MOVE_COST * moves_used
             if stamina_here < next_cost:
                 continue
@@ -140,17 +149,14 @@ class PlayerController:
         total = len(hills)
         their_count = sum(1 for h in hills.values() if h['they_control'])
 
-        # 1. Kill: step onto our cell or empty cell the opponent can also reach
+        # 1. Kill
         for m in moves:
             nl = self._dest(loc, m)
             if nl not in opp_reachable:
                 continue
-            if self._we_own(pb, nl) or not self._they_own(pb, nl):
-                # our cell = guaranteed win; empty cell = initiator wins = us
-                # but only if it's truly empty (paint_value==0) or ours
-                cell = pb.board.cells[nl.r][nl.c]
-                if self._we_own(pb, nl) or cell.paint_value == 0:
-                    return m
+            cell = pb.board.cells[nl.r][nl.c]
+            if self._we_own(pb, nl) or cell.paint_value == 0:
+                return m
 
         # 2. Dominance guard
         if total > 0 and their_count / total >= DOMINANCE_RATIO:
@@ -263,7 +269,7 @@ class PlayerController:
         recent = set(self.history)
         best_score, best_move = -float('inf'), None
         for nl, (fm, d) in cell_data.items():
-            s = self._cell_score(pb, nl) - d * 0.5
+            s = self._cell_score(pb, nl) - d * _W["roam_distance_penalty"]
             if nl in recent: s -= BACKTRACK_PENALTY
             if s > best_score:
                 best_score, best_move = s, fm
@@ -276,16 +282,16 @@ class PlayerController:
         theirs = self._they_own(pb, loc)
         unpainted = cell.paint_value == 0
 
-        if is_hill and unpainted:    score = 100
-        elif is_hill and theirs:     score = 80
-        elif is_hill and not ours:   score = 60
-        elif is_hill:                score = 20
-        elif unpainted:              score = 30
-        elif theirs:                 score = 10
-        else:                        score = 5
+        if is_hill and unpainted:    score = _W["score_hill_unpainted"]
+        elif is_hill and theirs:     score = _W["score_hill_theirs"]
+        elif is_hill and not ours:   score = _W["score_hill_not_ours"]
+        elif is_hill:                score = _W["score_hill_ours"]
+        elif unpainted:              score = _W["score_unpainted"]
+        elif theirs:                 score = _W["score_theirs"]
+        else:                        score = _W["score_ours"]
 
-        if cell.powerup: score += 50
-        if self.last_loc and loc == self.last_loc: score -= 20
+        if cell.powerup:                             score += _W["score_powerup_bonus"]
+        if self.last_loc and loc == self.last_loc:   score += _W["score_last_loc_penalty"]
         return score
 
     # ── Painting ──────────────────────────────────────────────────────────────
@@ -300,9 +306,9 @@ class PlayerController:
             if cell.is_wall or cell.beacon_parity != 0: continue
             if self._they_own(pb, n): continue
             if self._we_own(pb, n) and abs(cell.paint_value) >= GameConstants.MAX_PAINT_VALUE: continue
-            pri = (10 if cell.hill_id and cell.paint_value == 0 else
-                   8  if cell.hill_id else
-                   6  if cell.paint_value == 0 else
+            pri = (int(_W["paint_pri_hill_unpainted"]) if cell.hill_id and cell.paint_value == 0 else
+                   int(_W["paint_pri_hill_painted"])   if cell.hill_id else
+                   int(_W["paint_pri_unpainted"])       if cell.paint_value == 0 else
                    max(0, 4 - abs(cell.paint_value)))
             candidates.append((pri, len(candidates), n))
 

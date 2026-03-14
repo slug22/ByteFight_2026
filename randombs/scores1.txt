@@ -1,0 +1,8 @@
+  big_spiral      simons-bot: 10  orsnby-bot: 2  ties: 0
+  disjoint        simons-bot: 7  orsnby-bot: 5  ties: 0
+  matrix          simons-bot: 3  orsnby-bot: 12  ties: 0
+  maze            simons-bot: 8  orsnby-bot: 1  ties: 0
+  spiral          simons-bot: 5  orsnby-bot: 5  ties: 0
+  test_map        simons-bot: 10  orsnby-bot: 9  ties: 0
+  the_complex     simons-bot: 8  orsnby-bot: 9  ties: 0
+  the_temple      simons-bot: 6  orsnby-bot: 0  ties: 0
